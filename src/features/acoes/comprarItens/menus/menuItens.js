@@ -1,4 +1,3 @@
-// Arquivo criado por Gabriel
 function exibirItens(itens, categoria, saldoAtual) {
   console.log("✨================== ITENS ==================✨");
   console.log(`\n🧾 Categoria: ${categoria}`);

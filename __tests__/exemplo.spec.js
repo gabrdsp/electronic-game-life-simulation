@@ -1,4 +1,4 @@
-const { setarValoresPersonagem } = require("../src/features/funçoesAuxiliares");
+const { setarValoresPersonagem } = require("../src/features/funcoesAuxiliares");
 
 // Mock básico
 const personagemBase = {

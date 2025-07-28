@@ -1,4 +1,4 @@
-//Arquivo criado por Adrian
+//Arquivo criado por Adrian e Gabriel
 import { useQuestion } from "../../services/question/use-question";
 import { voltarAoMenuPrincipal } from "../../../index";
 import { verificarCheat } from "../gerenciadorCheats";
@@ -11,14 +11,14 @@ import { executarListagemPersonagens } from ".././acoes/interacoes/interacaoServ
 import { menuTrabalhar } from "../../utils/gerenciadorTrabalho";
 import { menuDormir } from "../../utils/controleEnergia";
 
-//Função que mostra o menu de ações para o usuário
-async function menuAcaoPersonagem() {
-  verificarMortePersonagem();
 
+//Função que mostra o menu de ações para o usuário
+
+async function menuAcaoPersonagem() {
   const personagemAtual = getPersonagemAtual();
 
   if (!personagemAtual) {
-    console.log("Nenhum personagem selecionado. Voltando ao menu principal.");
+    console.log("Nenhum personagem atual definido. Voltando ao menu principal.");
     voltarAoMenuPrincipal();
     return;
   }
@@ -28,13 +28,13 @@ async function menuAcaoPersonagem() {
     return;
   }
 
-  if (personagemAtual.energia === 0) {
+  if (getPersonagemAtual().energia === 0) {
     let escolhaDormir = await useQuestion(
       `Você está muito cansado! Escolha a opção de dormir\n1.Dormir\n\nx.Voltar ao menu principal`
     );
     switch (escolhaDormir.toLowerCase()) {
       case "1":
-        // implementar ação de dormir
+        await menuDormir(getPersonagemAtual())
         break;
       case "x":
         console.clear();
@@ -44,10 +44,12 @@ async function menuAcaoPersonagem() {
         console.clear();
         await verificarCheat(escolhaDormir, voltarAoMenuAcoes());
     }
+
     return;
   }
 
   let escolha = await useQuestion(`
+
 ╔════════════════════════════════════════╗
 ║ Escolha uma das opções:                ║
 ║                                        ║
@@ -64,29 +66,36 @@ async function menuAcaoPersonagem() {
 
   switch (escolha.toLowerCase()) {
     case "1":
-      await menuTrabalhar(personagemAtual);
+      await menuTrabalhar(getPersonagemAtual())
       break;
+
     case "2":
-      await menuTreinar(personagemAtual);
+      await menuTreinar(getPersonagemAtual());
       break;
+
     case "3":
-      await menuDormir(personagemAtual);
+      await menuDormir(getPersonagemAtual())
       break;
+
     case "4":
-      await menuTomarBanho(personagemAtual);
+      await menuTomarBanho(getPersonagemAtual())
       break;
+
     case "5":
       await menuLoja();
       break;
+
     case "6":
       await executarListagemPersonagens();
       break;
+
     case "x":
       console.clear();
       voltarAoMenuPrincipal();
       break;
+
     default:
-      await verificarCheat(escolha, voltarAoMenuAcoes());
+      await verificarCheat(escolha, voltarAoMenuAcoes())
   }
 }
 

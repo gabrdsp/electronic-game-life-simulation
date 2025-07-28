@@ -7,6 +7,7 @@ import { delay } from './gerenciadorTrabalho'
 import { atualizarPersonagem } from '../context/gerenciadorPersonagem'
 import { exibirInfoPersonagem } from '../features/infoPersonagens'
 import { voltarAoMenuAcoes } from '../features/acoes/menuAcao'
+import { verificarCheat } from '../features/gerenciadorCheats'
 
 export function regularEnergia() {
     const personagem = getPersonagemAtual()
@@ -15,15 +16,13 @@ export function regularEnergia() {
     }
     if (personagem.energia < 0) {
         personagem.energia = 0
-        // não realizar nenhuma ação se estiver com a energia zerada (controle feito no menu)
     }
 }
 
 export async function menuDormir(personagem){
     console.log(`${personagem.nome} está com ${personagem.energia} de energia.`)
-    const energiaInicial = personagem.energia
     const horasDormidas = await useQuestion(`\nBoa noite ${personagem.nome}! Quantas horas você quer dormir?`)
-    
+    verificarCheat(horasDormidas)
     const personagemDescansado = descansoEnergiaGanha(horasDormidas * 1000, personagem)
     atualizarPersonagem(personagemDescansado[0])
     await new Promise(res => setTimeout(res, 3300))
@@ -62,13 +61,13 @@ async function dormrirAnimacao(){
     }
 }
 
-function descansoEnergiaGanha(tempoDormido, personagem) {
+export function descansoEnergiaGanha(tempoDormido, personagem) {
     if(tempoDormido < 5000){
         return [{
         ...personagem,
         tempoDeVida: personagem.tempoDeVida - tempoDormido,
         energia: personagem.energia
-    }, 0]
+        }, 0]
     }
     const energiaRecebida = Math.floor(tempoDormido / 5000) * 4 // a cada 5000 dormidos, recebe 4 energia
     const bonusEnergia = (Math.floor(tempoDormido / 5000) - 1) * 2  // a cada 5000 a mais dormidos recebe 2 bonus energia

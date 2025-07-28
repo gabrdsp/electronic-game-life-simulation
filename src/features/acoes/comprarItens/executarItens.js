@@ -6,7 +6,7 @@ function comprarItem(id, nome, preco, pontos, categoria, personagem) {
     };
   }
 
-  // Compra realizada!
+  // Quando a compra for realizada
   personagem.cresceleons -= preco;
   personagem.itens.push({
     id,

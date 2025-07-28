@@ -1,4 +1,3 @@
-// Arquivo criado por Gabriel
 import { useQuestion } from "../../../../services/question/use-question";
 
 // Perguntar qual item o jogador quer comprar

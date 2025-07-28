@@ -2,7 +2,7 @@
 
 import { useQuestion } from "../../services/question/use-question";
 import { voltarAoMenuPrincipal } from "../../../index";
-import { deletarPersonagem } from "../funçoesAuxiliares";
+import { deletarPersonagem } from "../funcoesAuxiliares";
 
 // Função que apresenta as opções referentes á remoção de personagens
 async function menuDeletar(listaPersonagens, storage) {

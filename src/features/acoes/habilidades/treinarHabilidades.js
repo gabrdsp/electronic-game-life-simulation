@@ -1,15 +1,20 @@
 // Arquivo criado por Gabriel
 
 import { treinoEnergiaGasta, regularEnergia } from "../../../utils/controleEnergia";
-import { atualizarPersonagem } from "../../../context/gerenciadorPersonagem"; // Atualiza personagem no contexto
-import { useQuestion } from "../../../services/question/use-question"; // Permite fazer perguntas ao usuário
-import { redirecionando } from "../../../utils/menuLoading"; // Exibe animação de carregamento
-import { exibirInfoPersonagem } from "../../infoPersonagens"; // Mostra dados do Cresim
-import { voltarAoMenuAcoes } from "../../acoes/menuAcao"; // Retorna ao menu de ações
+import { atualizarPersonagem } from "../../../context/gerenciadorPersonagem"; 
+import { useQuestion } from "../../../services/question/use-question"; 
+import { redirecionando } from "../../../utils/menuLoading"; 
+import { exibirInfoPersonagem } from "../../infoPersonagens"; 
+import { voltarAoMenuAcoes } from "../../acoes/menuAcao"; 
 
 const tempoTreino = 8000; // Duração do ciclo de treino (8 segundos)
-const intervalo = 350; // Intervalo da animação em milissegundos
+const intervalo = 350; // Intervalo da animação
 const energiaNecessaria = 4; // Energia mínima para treinar
+
+// Função que normaliza texto (remove acentos e deixa minúsculo)
+function normalizarTexto(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
 
 // Função principal que exibe o menu de treino
 async function menuTreinar(personagem) {
@@ -44,7 +49,7 @@ async function menuTreinar(personagem) {
   // Executa o treino com animação
   const personagemAtualizado = await animacaoTreino(itemSelecionado, personagem);
 
-  atualizarPersonagem(personagemAtualizado); // Atualiza o personagem no contexto
+  atualizarPersonagem(personagemAtualizado); 
 
   // Exibe o status atualizado para o usuário
   exibirInfoPersonagem();
@@ -79,13 +84,13 @@ function animacaoTreino(item, personagem) {
     const loading = setInterval(() => {
       console.clear();
       switch (contador) {
-        case 1: console.log("📘"); break;
-        case 2: console.log("📖"); break;
-        case 3: console.log("📖 ABC"); break;
-        case 4: console.log("📖   BCD"); break;
-        case 5: console.log("📖     CDE"); break;
-        case 6: console.log("📖       D"); break;
-        case 7: console.log("📖"); contador = 0; break;
+        case 1: console.log("   ⭐  "); break;
+        case 2: console.log("   🌟  "); break;
+        case 3: console.log("✨ CR ✨"); break;
+        case 4: console.log(" ✨ CRES ✨"); break;
+        case 5: console.log("  ✨ CRESCER ✨"); break;
+        case 6: console.log("        🌟  "); break;
+        case 7: console.log("        ⭐  "); contador = 0; break;
       }
       contador++;
     }, intervalo);
@@ -109,7 +114,7 @@ function treinarHabilidadeInterna(item, personagem) {
   const { habilidade, pontos } = item;
 
   const pontosAtuais = personagem.pontosDeHabilidade?.[habilidade] || 0;
-  const bonus = personagem.aspiracao.toLowerCase() === habilidade.toLowerCase() ? 1 : 0;
+  const bonus = normalizarTexto(personagem.aspiracao) === normalizarTexto(habilidade) ? 1 : 0;
   const novosPontos = pontosAtuais + pontos + bonus;
 
   personagem.pontosDeHabilidade = {

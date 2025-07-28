@@ -1,7 +1,7 @@
 // Arquivo criado por Adrian
 
 import { useQuestion } from "../../services/question/use-question"
-import { setarValoresPersonagem } from "../../features/funçoesAuxiliares";
+import { setarValoresPersonagem } from "../../features/funcoesAuxiliares";
 import {voltarAoMenuAcoes } from "../acoes/menuAcao";
 import { atualizarPersonagem, setPersonagemEmMemoria } from "../../context/gerenciadorPersonagem";
 

@@ -38,7 +38,7 @@ function exibirResumoInteracao(resultado) {
   setTimeout(() => {
     console.log("⏳ Retornando ao menu de ações...");
     voltarAoMenuAcoes(personagemAtual);
-  }, 30000); // Espera 30 segundos
+  }, 10000); // Espera 10 segundos
 }
 
 export { exibirResumoInteracao };

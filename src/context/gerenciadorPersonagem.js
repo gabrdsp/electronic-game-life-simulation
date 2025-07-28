@@ -12,16 +12,6 @@ function setPersonagemEmMemoria(personagem) {
 }
 
 function atualizarPersonagem(personagemAtualizado) {
-  if (
-    typeof personagemAtualizado !== "object" ||
-    personagemAtualizado === null ||
-    !("id" in personagemAtualizado)
-  ) {
-    console.error("❌ Personagem inválido para atualização (não é um objeto):", personagemAtualizado);
-    console.trace("Trace:");
-    return;
-  }
-
   const storage = useLocalStorage();
   const personagens = storage.getObject("listaPersonagens") || [];
 
@@ -30,8 +20,10 @@ function atualizarPersonagem(personagemAtualizado) {
   let novaLista;
 
   if (index === -1) {
+    // Adiciona o personagem novo
     novaLista = [...personagens, personagemAtualizado];
   } else {
+    // Atualiza o personagem existente
     const personagemMesclado = {
       ...personagens[index],
       ...personagemAtualizado,

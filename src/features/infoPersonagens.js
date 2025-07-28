@@ -1,4 +1,5 @@
 // Arquivo criado por Gabriel
+
 import { getPersonagemAtual } from "../context/gerenciadorPersonagem";
 import { verificarSerionidade } from "./executarAcoes";
 

@@ -25,7 +25,7 @@ Digite o número da categoria desejada:
     5: "MUSICA",
   };
 
-  if (escolha.toLowerCase() === "x") { // pro adrian
+  if (escolha.toLowerCase() === "x") {
     console.log("\n Você saiu da loja. Até a próxima!");
     return voltarAoMenuAcoes();
   }

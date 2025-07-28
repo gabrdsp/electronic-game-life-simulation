@@ -1,5 +1,3 @@
-// Arquivo reescrito por Gabriel ✨
-
 function listarPersonagensInteracao(lista) {
   console.log(`\n🧑‍🤝‍🧑 Personagens disponíveis para interação:\n`);
 
