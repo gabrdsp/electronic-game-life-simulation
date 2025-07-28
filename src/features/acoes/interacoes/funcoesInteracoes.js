@@ -25,10 +25,13 @@ async function obterDetalhesInteracao(tipo, interacao) {
   }
 }
 
-// Salva os personagens atualizados no localStorage e atualiza o personagem atual do contexto
+// Salva os personagens atualizados no localStorage mas mantém o personagem atual inalterado
 function atualizarBancoDeDados(personagemAtual, personagemSelecionado) {
   const storage = useLocalStorage();
   const lista = storage.getObject('listaPersonagens') || [];
+  
+  // Guarda uma referência do personagem atual original antes das modificações
+  const personagemOriginal = getPersonagemAtual();
 
   const listaAtualizada = lista.map(p => {
     if (p.id === personagemAtual.id) return personagemAtual;
@@ -37,7 +40,11 @@ function atualizarBancoDeDados(personagemAtual, personagemSelecionado) {
   });
 
   storage.setObject('listaPersonagens', listaAtualizada);
-  setPersonagemEmMemoria(personagemAtual);
+  
+  // Atualiza apenas os dados do personagem atual sem trocar o personagem
+  if (personagemOriginal && personagemOriginal.id === personagemAtual.id) {
+    setPersonagemEmMemoria(personagemAtual);
+  }
 }
 
 // Ajusta o tempo de jogo dos dois personagens baseado na energia gasta
@@ -54,20 +61,24 @@ async function executarInteracao(tipo, interacao, personagemSelecionado) {
   const detalhes = await obterDetalhesInteracao(tipo, interacao);
   if (detalhes.erro) return detalhes;
 
-  const personagemAtual = getPersonagemAtual();
-  if (!personagemAtual) return { erro: 'Nenhum personagem ativo.' };
+  const personagemAtualOriginal = getPersonagemAtual();
+  if (!personagemAtualOriginal) return { erro: 'Nenhum personagem ativo.' };
+
+  // Criar cópias profundas dos personagens para evitar modificações acidentais
+  const personagemAtual = JSON.parse(JSON.stringify(personagemAtualOriginal));
+  const personagemSelecionadoCopia = JSON.parse(JSON.stringify(personagemSelecionado));
 
   const energiaNecessaria = detalhes.energia;
   const pontos = detalhes.pontos;
 
   // Verifica se os personagens têm energia suficiente e remove a energia gasta
-  const energiaValidada = verificarERemoverEnergia(personagemAtual, personagemSelecionado, energiaNecessaria);
+  const energiaValidada = verificarERemoverEnergia(personagemAtual, personagemSelecionadoCopia, energiaNecessaria);
   if (energiaValidada.erro) return energiaValidada;
 
-  atualizarTempoDeJogo(personagemAtual, personagemSelecionado, energiaValidada.energiaGastaAtual, energiaValidada.energiaGastaSelecionado);
-  atualizarPontosHabilidade(personagemAtual, personagemSelecionado, pontos);
-  atualizarTipoRelacao(personagemAtual, personagemSelecionado);
-  atualizarBancoDeDados(personagemAtual, personagemSelecionado);
+  atualizarTempoDeJogo(personagemAtual, personagemSelecionadoCopia, energiaValidada.energiaGastaAtual, energiaValidada.energiaGastaSelecionado);
+  atualizarPontosHabilidade(personagemAtual, personagemSelecionadoCopia, pontos);
+  atualizarTipoRelacao(personagemAtual, personagemSelecionadoCopia);
+  atualizarBancoDeDados(personagemAtual, personagemSelecionadoCopia);
 
   return {
     sucesso: true,
@@ -77,7 +88,7 @@ async function executarInteracao(tipo, interacao, personagemSelecionado) {
     energiaGastaSelecionado: energiaValidada.energiaGastaSelecionado,
     pontosGanhos: pontos,
     personagemAtual,
-    personagemSelecionado
+    personagemSelecionado: personagemSelecionadoCopia
   };
 }
 

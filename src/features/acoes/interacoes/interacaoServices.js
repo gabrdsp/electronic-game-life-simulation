@@ -22,7 +22,7 @@ import {
 
 import { voltarAoMenuAcoes } from "../../acoes/menuAcao.js";
 import { mostrarLoading } from "../../../utils/menuLoading.js";
-import { setPersonagemEmMemoria } from "../../../context/gerenciadorPersonagem.js";
+import { setPersonagemEmMemoria, getPersonagemAtual } from "../../../context/gerenciadorPersonagem.js";
 import { exibirResumoInteracao } from "./menus/Resultado.js";
 import { executarInteracao } from "./funcoesInteracoes.js";
 
@@ -66,15 +66,18 @@ async function executarListagemPersonagens() {
     const personagemEscolhido = disponiveis[index];
 
     if (!isNaN(index) && personagemEscolhido) {
+      // Não trocar o personagem atual, apenas passar o escolhido para a função
       exibirMensagemPersonagemEscolhido(personagemEscolhido.nome);
-      await menuTiposDeInteracao(personagemEscolhido);  // Aguardamos antes de voltar
-      return voltarAoMenuAcoes();                        // Depois voltamos ao menu de ações
+      await menuTiposDeInteracao(personagemEscolhido);
+      // Após terminar a interação, sai do loop e volta ao menu de ações
+      break;
     } else {
       exibirMensagemOpcaoInvalida();
     }
-
-
   }
+  
+  // Volta ao menu de ações após sair do loop
+  return voltarAoMenuAcoes();
 }
 
 // Mostra as interações disponíveis para o tipo selecionado
@@ -117,10 +120,14 @@ async function menuInteracoes(personagemEscolhido, tipoSelecionado) {
       );
 
       if (resultado?.sucesso) {
-        console.clear();
-        await mostrarLoading();
-        exibirResumoInteracao(resultado);
-        return;
+        console.log("TESTE: Prestes a chamar exibirResumoInteracao");
+        console.log("TESTE: Resultado:", JSON.stringify(resultado, null, 2));
+        await exibirResumoInteracao(resultado);
+        console.log("TESTE: exibirResumoInteracao chamada");
+        return; // O timeout está dentro da função exibirResumoInteracao
+      } else if (resultado?.erro) {
+        console.log(`\n❌ Erro: ${resultado.erro}`);
+        setTimeout(() => {}, 2000); // Pausa para mostrar o erro
       }
     } else {
       exibirOpcaoInvalida();
@@ -130,7 +137,7 @@ async function menuInteracoes(personagemEscolhido, tipoSelecionado) {
 
 // Mostra os tipos de interação possíveis com base na relação
 async function menuTiposDeInteracao(personagemEscolhido) {
-  const personagemAtual = setPersonagemEmMemoria();
+  const personagemAtual = getPersonagemAtual();
 
   if (!personagemAtual) {
     exibirErroInteracoes();
@@ -155,8 +162,7 @@ async function menuTiposDeInteracao(personagemEscolhido) {
       console.clear();
       console.log("\nVoltando ao menu anterior...\n");
       await mostrarLoading();
-      await executarListagemPersonagens();  // Espera para continuar o fluxo correto
-      return;
+      return; // Volta para a função que chamou esta
     }
 
     const index = parseInt(escolha) - 1;

@@ -54,10 +54,10 @@ async function menuAcaoPersonagem() {
 ║ Escolha uma das opções:                ║
 ║                                        ║
 ║   1 - 💼   Trabalhar                   ║
-║   2 - 🏋️‍♂️   Treinar Habilidade          ║
+║   2 - 🏄   Treinar Habilidade          ║
 ║   3 - 🛏️    Dormir                      ║
 ║   4 - 🛁   Tomar Banho                 ║
-║   5 - 🛒   Comprar Item                ║
+║   5 - 🛍️   Comprar Item                 ║
 ║   6 - 🤝   Interagir Com Outros        ║
 ║   x - ❌   Voltar ao Menu Principal    ║
 ║                                        ║

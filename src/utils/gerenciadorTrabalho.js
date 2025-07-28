@@ -11,61 +11,78 @@ import { regularEnergia } from './controleEnergia'
 import { atualizarPersonagem } from '../context/gerenciadorPersonagem'
 
 
-export async function menuTrabalhar(personagem){
-    const empregoPersonagem = await getEmpregoPersonagem(personagem)
-    if (!empregoPersonagem){
-        console.log(`Opa, parece que ${personagem.nome} está desempregado`)
-        await new Promise(res => setTimeout(res, 2000))
+export async function menuTrabalhar(personagem) {git
+    const emprego = await verificarEmprego(personagem)
+    if (!emprego) return
+
+    console.log(`\nCaixa atual: $${personagem.cresceleons}`)
+    const salario = calcularSalario(emprego, personagem.pontosDeHabilidade)
+    
+    const resultado = trabalho(personagem, salario)
+    if (!resultado) {
+        await esperar(2000)
         voltarAoMenuAcoes()
         return
     }
-    console.log(`\nCaixa atual: $${personagem.cresceleons}`)
+    
+    personagem = resultado.personagem
+    const aReceber = resultado.aReceber
 
-    const categoria = empregoPersonagem.categoria
-    const pontosHabilidadePersonagem = personagem.pontosDeHabilidade 
-    const nivel = nivelSalario(pontosHabilidadePersonagem[categoria])
-    const salario = empregoPersonagem.salario.find(s => s.nivel === nivel)?.valor ?? 0
-
-    let aReceber = 0
-    if(personagem.energia < 10){
-        const infosTrabalhoEnergia = trabalhoEnergiaGasta(personagem, 'recalculo')
-        if(!infosTrabalhoEnergia){
-            await new Promise(res => setTimeout(res, 2000))
-            voltarAoMenuAcoes()
-            return
-        }
-        const recalculo = recalculoSalario(infosTrabalhoEnergia, salario)
-        personagem = higieneTrabalho(personagem, recalculo.tempoTrabalhado)
-        aReceber = higieneSalario(recalculo.salario)
-    }else{
-        const tempoTrabalhado = trabalhoEnergiaGasta(personagem, 'jornadaPadrao') // passar a jornada de trabalho
-        if(!tempoTrabalhado){
-            await new Promise(res => setTimeout(res, 2000))
-            voltarAoMenuAcoes()
-            return
-        }
-        personagem = higieneTrabalho(personagem, tempoTrabalhado)
-        aReceber = higieneSalario(salario)
-    }
-    
-    console.log(`💪 Hora do expediente de ${empregoPersonagem.cargo}, ${personagem.nome}!`)
-    
-    await new Promise(res => setTimeout(res, 3300))
-    
+    console.log(`💪 Hora do expediente de ${emprego.cargo}, ${personagem.nome}!`)
+    await esperar(3300)
     await animacaoTrabalho()
     console.clear()
-    
-    
-    
+
     atualizarPersonagem({
         ...personagem,
         cresceleons: personagem.cresceleons + aReceber
-    })
-    exibirInfoPersonagem()    
+    });
 
-    await new Promise(res => setTimeout(res, 6000))
+    exibirInfoPersonagem()    
+    await esperar(6000)
     voltarAoMenuAcoes()
 }
+
+async function verificarEmprego(personagem) {
+    const emprego = await getEmpregoPersonagem(personagem)
+    if (!emprego) {
+        console.log(`Opa, parece que ${personagem.nome} está desempregado`)
+        await esperar(2000)
+        voltarAoMenuAcoes()
+        return null
+    }
+    return emprego;
+}
+
+
+function calcularSalario(emprego, pontosHabilidade) {
+    const nivel = nivelSalario(pontosHabilidade[emprego.categoria])
+    return emprego.salario.find(s => s.nivel === nivel)?.valor ?? 0
+}
+
+
+export function trabalho(personagem, salario) {
+    if (personagem.energia < 10) {
+        const infos = trabalhoEnergiaGasta(personagem, 'recalculo')
+        if (!infos) return null;
+
+        const recalculo = recalculoSalario(infos, salario)
+        personagem = higieneTrabalho(personagem, recalculo.tempoTrabalhado)
+        return { personagem, aReceber: higieneSalario(recalculo.salario) }
+    } else {
+        const tempo = trabalhoEnergiaGasta(personagem, 'jornadaPadrao')
+        if (!tempo) return null
+
+        personagem = higieneTrabalho(personagem, tempo)
+        return { personagem, aReceber: higieneSalario(salario) }
+    }
+}
+
+
+function esperar(ms) {
+    return new Promise(res => setTimeout(res, ms))
+}
+
 
 async function getEmpregoPersonagem(personagem){
     const emprego = (await axios.get('https://emilyspecht.github.io/the-cresim/empregos.json')).data
